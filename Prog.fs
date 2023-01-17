@@ -77,24 +77,25 @@ and leftFold f acc = function
         rightFold f newLeftAcc right
 
 
-// // Insert some values into the tree
-// let tree = [5; 3; 7; 2; 4] |> List.fold (fun tree x -> insert x tree) Leaf
+let rec merge t1 t2 =
+    let rec mergeHelper t1 t2 acc =
+        match t1, t2 with
+        | Leaf, Leaf -> List.rev acc
+        | Leaf, Node (value, left, right) -> mergeHelper Leaf right (value :: mergeHelper Leaf left acc)
+        | Node (value, left, right), Leaf -> mergeHelper right Leaf (value :: mergeHelper left Leaf acc)
+        | Node (value1, left1, right1), Node (value2, left2, right2) ->
+            if value1 < value2 then
+                mergeHelper right1 t2 (value1 :: mergeHelper left1 t2 acc)
+            else
+                mergeHelper t1 right2 (value2 :: mergeHelper t1 left2 acc)
 
-// // Check if a value is in the tree
-// printfn "Is 5 in the tree? %b" (find 5 tree)  // Output: Is 5 in the tree? true
-// printfn "Is 6 in the tree? %b" (find 6 tree)  // Output: Is 6 in the tree? false
+    let sortedList = mergeHelper t1 t2 []
+    sortedList |> List.fold (fun tree x -> insert x tree) Leaf
 
 
-// let newTree = delete 5 tree
-
-// // Check if the value is still in the tree
-// printfn "Is 5 in the tree? %b" (find 5 newTree)  // Output: Is 5 in the tree? false
+let Empty = Leaf
 
 
-
-// let newTree = filter (fun x -> x <= 4) tree
-
-// // Check if the values greater than 4 are removed
-// printfn "Is 5 in the tree? %b" (find 5 newTree)  // Output: Is 5 in the tree? false
-// printfn "Is 4 in the tree? %b" (find 4 newTree)  // Output: Is 4 in the tree? true
-
+let rec size = function
+    | Leaf -> 0
+    | Node(_, left, right) -> 1 + size left + size right

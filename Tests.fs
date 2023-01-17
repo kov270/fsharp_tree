@@ -24,23 +24,57 @@ let rightSubTree = function
     | Leaf -> Leaf
     | Node(_, _, r) -> r
 
+
 [<Property>]
-let ``inserting and finding an element preserves the BST property`` (value: int, tree: Tree<int>) =
+let ``associativity`` (list1: List<int>, list2: List<int>, list3: List<int>) =
+    let tree1 = list1 |> List.fold (fun tree x -> insert x tree) Leaf
+    let tree2 = list2 |> List.fold (fun tree x -> insert x tree) Leaf
+    let tree3 = list3 |> List.fold (fun tree x -> insert x tree) Leaf
+
+    let a = merge tree1 (merge tree2 tree3)
+    let b = merge (merge tree1 tree2) tree3
+    let asum = leftFold (fun acc x -> acc + x) 0 a
+    let bsum = leftFold (fun acc x -> acc + x) 0 b
+    // printfn "%A %A" astring bstring
+    asum = bsum
+
+[<Property>]
+let ``merge with Empty element`` (tree1: Tree<int>) =
+    let a = merge tree1 Empty
+    let b = merge Empty tree1
+    let astring = leftFold (fun acc x -> acc + string x) "" a
+    let bstring = leftFold (fun acc x -> acc + string x) "" b
+    astring = bstring
+
+[<Property>]
+let ``inserting and finding an element preserves the BST property`` (value: int, list1: List<int>) =
+    let tree: Tree<int> = list1 |> List.fold (fun tree x -> insert x tree) Leaf
     let newTree = insert value tree
-    let leftIsBST = isBST (<) (leftSubTree newTree)
-    let rightIsBST = isBST (>) (rightSubTree newTree)
+    let isBST = isBST (<) newTree
     let result = find value newTree
-    let isBST = leftIsBST && rightIsBST
     result ==> isBST
 
+[<Property>]
+let ``deleting a value preserves the BST property`` (value: int, list1: List<int>) =
+    let tree = list1 |> List.fold (fun tree x -> insert x tree) Leaf
+    let newTree = delete value tree
+    let isBST = isBST (<) newTree
+    isBST
 
 [<Property>]
-let ``deleting a value preserves the BST property`` (value: int, tree: Tree<int>) =
-    let newTree = delete value tree
-    let leftIsBST = isBST (<) (leftSubTree newTree)
-    let rightIsBST = isBST (>) (rightSubTree newTree)
-    let isBST = leftIsBST && rightIsBST
-    isBST
+let ``map preserves the size of the tree`` (list1: List<int>, f: int -> int) =
+    let tree = list1 |> List.fold (fun tree x -> insert x tree) Leaf
+    let newTree = map f tree
+    let sizeTree = size tree
+    let sizeNewTree = size newTree
+    sizeTree = sizeNewTree
+
+[<Property>]
+let ``leftFold and rightFold same result on sum`` (list1: List<int>, acc: int) =
+    let tree = list1 |> List.fold (fun tree x -> insert x tree) Leaf
+    let leftFoldRes = leftFold (+) acc tree
+    let rightFoldRes = rightFold (+) acc tree
+    leftFoldRes = rightFoldRes
 
 
 let tree = [5; 3; 7; 2; 4] |> List.fold (fun tree x -> insert x tree) Leaf
@@ -51,8 +85,3 @@ let ``leftFold calculates the sum of all values``() =
     let actual = leftFold (+) 0 tree
     Assert.Equal(expected, actual)
 
-
-
-
-// Check.QuickThrowOnFailure ``inserting and finding an element preserves the BST property``
-// Check.QuickThrowOnFailure ``deleting a value preserves the BST property``
