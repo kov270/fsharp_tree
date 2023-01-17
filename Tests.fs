@@ -27,8 +27,8 @@ let rightSubTree = function
 [<Property>]
 let ``inserting and finding an element preserves the BST property`` (value: int, tree: Tree<int>) =
     let newTree = insert value tree
-    let leftIsBST = isBST (fun x y -> x < y) (leftSubTree newTree)
-    let rightIsBST = isBST (fun x y -> x > y) (rightSubTree newTree)
+    let leftIsBST = isBST (<) (leftSubTree newTree)
+    let rightIsBST = isBST (>) (rightSubTree newTree)
     let result = find value newTree
     let isBST = leftIsBST && rightIsBST
     result ==> isBST
@@ -37,8 +37,8 @@ let ``inserting and finding an element preserves the BST property`` (value: int,
 [<Property>]
 let ``deleting a value preserves the BST property`` (value: int, tree: Tree<int>) =
     let newTree = delete value tree
-    let leftIsBST = isBST (fun x y -> x < y) (leftSubTree newTree)
-    let rightIsBST = isBST (fun x y -> x > y) (rightSubTree newTree)
+    let leftIsBST = isBST (<) (leftSubTree newTree)
+    let rightIsBST = isBST (>) (rightSubTree newTree)
     let isBST = leftIsBST && rightIsBST
     isBST
 
