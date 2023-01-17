@@ -33,8 +33,8 @@ let ``associativity`` (list1: List<int>, list2: List<int>, list3: List<int>) =
 
     let a = merge tree1 (merge tree2 tree3)
     let b = merge (merge tree1 tree2) tree3
-    let asum = leftFold (fun acc x -> acc + x) 0 a
-    let bsum = leftFold (fun acc x -> acc + x) 0 b
+    let asum = leftFold (+) 0 a
+    let bsum = leftFold (+) 0 b
     // printfn "%A %A" astring bstring
     asum = bsum
 
