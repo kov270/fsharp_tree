@@ -48,7 +48,7 @@ let tree = [5; 3; 7; 2; 4] |> List.fold (fun tree x -> insert x tree) Leaf
 [<Fact>]
 let ``leftFold calculates the sum of all values``() =
     let expected = [5; 3; 7; 2; 4] |> List.sum
-    let actual = leftFold (fun acc x -> acc + x) 0 tree
+    let actual = leftFold (+) 0 tree
     Assert.Equal(expected, actual)
 
 
