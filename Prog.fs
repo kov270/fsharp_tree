@@ -99,3 +99,6 @@ let Empty = Leaf
 let rec size = function
     | Leaf -> 0
     | Node(_, left, right) -> 1 + size left + size right
+
+
+let treeFromList list = List.fold (fun tree x -> insert x tree) Leaf list
