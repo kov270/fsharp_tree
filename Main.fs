@@ -16,4 +16,5 @@ let main argv =
     printfn "mergedTree21"
     rightFold (fun acc x -> printfn "%i" x; acc) () mergedTree21 |> ignore
 
+    rightFold (fun acc x -> printfn "%i" x; acc) () (map (fun acc -> acc + 1) (treeFromList [0])) |> ignore
     0

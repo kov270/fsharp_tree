@@ -51,17 +51,6 @@ let rec filter f = function
             | l, r -> Node (minValue r, l, delete (minValue r) r)
 
 
-
-let rec map f = function
-    | Leaf -> Leaf
-    | Node (value, left, right) ->
-        let newValue = f value
-        let newLeft = map f left
-        let newRight = map f right
-        Node (newValue, newLeft, newRight)
-
-
-
 let rec rightFold f acc = function
     | Leaf -> acc
     | Node (value, left, right) ->
@@ -75,6 +64,17 @@ and leftFold f acc = function
         let newAcc = f acc value
         let newLeftAcc = leftFold f newAcc left
         rightFold f newLeftAcc right
+
+
+let map f = function
+    | Leaf -> Leaf
+    | Node (value, left, right) -> leftFold (fun tree x -> insert x tree) Leaf (Node (value, left, right))
+    // | Leaf -> Leaf
+    // | Node (value, left, right) ->
+    //     let newValue = f value
+    //     let newLeft = map f left
+    //     let newRight = map f right
+    //     insert newValue (Node (newValue, newLeft, newRight))
 
 
 let rec merge t1 t2 =
@@ -102,3 +102,16 @@ let rec size = function
 
 
 let treeFromList list = List.fold (fun tree x -> insert x tree) Leaf list
+
+
+let rec strongEqTrees t1 t2 =
+    match t1, t2 with
+    | Leaf, Leaf -> true
+    | Leaf, Node _ | Node _, Leaf -> false
+    | Node (value1, left1, right1), Node (value2, left2, right2) ->
+        value1 = value2 && strongEqTrees left1 left2 && strongEqTrees right1 right2
+
+
+let eqTrees t1 t2 =
+    (size t1 = size t2) && (leftFold (fun acc x -> acc && (find x t2)) true t1)
+

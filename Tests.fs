@@ -26,27 +26,24 @@ let rightSubTree = function
 
 
 [<Property>]
-let ``associativity and merge does not lose elements`` (list1: List<int>, list2: List<int>, list3: List<int>) =
+let ``associativity of merge`` (list1: List<int>, list2: List<int>, list3: List<int>) =
     let tree1 = treeFromList list1
     let tree2 = treeFromList list2
     let tree3 = treeFromList list3
 
     let a = merge tree1 (merge tree2 tree3)
     let b = merge (merge tree1 tree2) tree3
-    // let asum = leftFold (+) 0 a
-    // let bsum = leftFold (+) 0 b
-    let aConnected = leftFold (fun x li -> li :: x) [] a |> List.sort
-    let bConnected = leftFold (fun x li -> li :: x) [] b |> List.sort
-    let allConnected = list1 @ list2 @ list3 |> Seq.distinct |> List.ofSeq |> List.sort
-    (aConnected = bConnected) && (bConnected = allConnected)
+    // let aConnected = leftFold (fun x li -> li :: x) [] a |> List.sort
+    // let bConnected = leftFold (fun x li -> li :: x) [] b |> List.sort
+    (eqTrees a b)
 
 [<Property>]
 let ``merge with Empty element`` (tree1: Tree<int>) =
     let a = merge tree1 Empty
     let b = merge Empty tree1
-    let astring = leftFold (fun acc x -> acc + string x) "" a
-    let bstring = leftFold (fun acc x -> acc + string x) "" b
-    astring = bstring
+    // let astring = leftFold (fun acc x -> acc + string x) "" a
+    // let bstring = leftFold (fun acc x -> acc + string x) "" b
+    eqTrees a b
 
 [<Property>]
 let ``inserting and finding an element preserves the BST property`` (value: int, list1: List<int>) =
@@ -70,6 +67,13 @@ let ``map preserves the size of the tree`` (list1: List<int>, f: int -> int) =
     let sizeTree = size tree
     let sizeNewTree = size newTree
     sizeTree = sizeNewTree
+
+[<Property>]
+let ``map preserves BST`` (list1: List<int>, f: int -> int) =
+    let tree = list1 |> treeFromList
+    let newTree = map f tree
+    let isBST = isThisTreeBST newTree
+    isBST
 
 [<Property>]
 let ``leftFold and rightFold same result on sum`` (list1: List<int>, acc: int) =
