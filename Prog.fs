@@ -1,9 +1,18 @@
 module Prog
 
-type Tree<'T> =
-    | Node of 'T * Tree<'T> * Tree<'T>
-    | Leaf
 
+type Tree<'T> = 
+  | Leaf 
+  | Node of 'T * Tree<'T> * Tree<'T>
+
+let rec toSeq (t: Tree<'T>) : seq<'T> =
+    match t with
+    | Leaf -> Seq.empty
+    | Node (v, l, r) -> seq {
+        yield! toSeq l
+        yield v
+        yield! toSeq r
+    }
 
 let rec minValue = function
     | Leaf -> failwith "minValue called on empty tree"
@@ -69,13 +78,6 @@ and leftFold f acc = function
 let map f = function
     | Leaf -> Leaf
     | Node (value, left, right) -> leftFold (fun tree x -> insert x tree) Leaf (Node (value, left, right))
-    // | Leaf -> Leaf
-    // | Node (value, left, right) ->
-    //     let newValue = f value
-    //     let newLeft = map f left
-    //     let newRight = map f right
-    //     insert newValue (Node (newValue, newLeft, newRight))
-
 
 let rec merge t1 t2 =
     let rec mergeHelper t1 t2 acc =
@@ -112,6 +114,8 @@ let rec strongEqTrees t1 t2 =
         value1 = value2 && strongEqTrees left1 left2 && strongEqTrees right1 right2
 
 
-let eqTrees t1 t2 =
-    (size t1 = size t2) && (leftFold (fun acc x -> acc && (find x t2)) true t1)
+// let eqTrees t1 t2 =
+//     (size t1 = size t2) && (leftFold (fun acc x -> acc && (find x t2)) true t1)
 
+let eqTrees t1 t2 =
+    Seq.zip (toSeq t1) (toSeq t2) |> Seq.forall (fun (x, y) -> x = y)

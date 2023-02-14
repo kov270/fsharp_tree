@@ -11,6 +11,12 @@ let main argv =
     let mergedTree21 = merge tree1 (merge tree2 tree3)
     let mergedTree12 = merge (merge tree1 tree2) tree3
 
+    for node in toSeq (mergedTree21) do
+        printfn "%d" node
+
+    printfn "eqTrees"
+    printfn "%b" (eqTrees mergedTree21 mergedTree12)
+    
     printfn "mergedTree12"
     rightFold (fun acc x -> printfn "%i" x; acc) () mergedTree12 |> ignore
     printfn "mergedTree21"

@@ -38,7 +38,8 @@ let ``associativity of merge`` (list1: List<int>, list2: List<int>, list3: List<
     (eqTrees a b)
 
 [<Property>]
-let ``merge with Empty element`` (tree1: Tree<int>) =
+let ``merge with Empty element`` (list1: List<int>) =
+    let tree1 = treeFromList list1
     let a = merge tree1 Empty
     let b = merge Empty tree1
     // let astring = leftFold (fun acc x -> acc + string x) "" a
