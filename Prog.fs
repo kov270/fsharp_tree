@@ -79,21 +79,6 @@ let map f = function
     | Leaf -> Leaf
     | Node (value, left, right) -> leftFold (fun tree x -> insert x tree) Leaf (Node (value, left, right))
 
-let rec merge t1 t2 =
-    let rec mergeHelper t1 t2 acc =
-        match t1, t2 with
-        | Leaf, Leaf -> List.rev acc
-        | Leaf, Node (value, left, right) -> mergeHelper Leaf right (value :: mergeHelper Leaf left acc)
-        | Node (value, left, right), Leaf -> mergeHelper right Leaf (value :: mergeHelper left Leaf acc)
-        | Node (value1, left1, right1), Node (value2, left2, right2) ->
-            if value1 < value2 then
-                mergeHelper right1 t2 (value1 :: mergeHelper left1 t2 acc)
-            else
-                mergeHelper t1 right2 (value2 :: mergeHelper t1 left2 acc)
-
-    let sortedList = mergeHelper t1 t2 []
-    sortedList |> List.fold (fun tree x -> insert x tree) Leaf
-
 
 let Empty = Leaf
 
@@ -104,6 +89,23 @@ let rec size = function
 
 
 let treeFromList list = List.fold (fun tree x -> insert x tree) Leaf list
+
+
+let merge t1 t2 = treeFromList (Seq.append (toSeq t1) (toSeq t2) |> Seq.toList)
+// let merge t1 t2 =
+//     let rec mergeHelper t1 t2 acc =
+//         match t1, t2 with
+//         | Leaf, Leaf -> List.rev acc
+//         | Leaf, Node (value, left, right) -> mergeHelper Leaf right (value :: mergeHelper Leaf left acc)
+//         | Node (value, left, right), Leaf -> mergeHelper right Leaf (value :: mergeHelper left Leaf acc)
+//         | Node (value1, left1, right1), Node (value2, left2, right2) ->
+//             if value1 < value2 then
+//                 mergeHelper right1 t2 (value1 :: mergeHelper left1 t2 acc)
+//             else
+//                 mergeHelper t1 right2 (value2 :: mergeHelper t1 left2 acc)
+
+//     let sortedList = mergeHelper t1 t2 []
+//     sortedList |> List.fold (fun tree x -> insert x tree) Leaf
 
 
 let rec strongEqTrees t1 t2 =
